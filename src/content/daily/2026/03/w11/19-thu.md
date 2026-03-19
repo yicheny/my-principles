@@ -12,4 +12,3 @@ tags: [daily, AI, llm]
 2. 如何学习minimind
 
 ## 收获
-
