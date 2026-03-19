@@ -24,6 +24,7 @@ const currentPath = Astro.url.pathname;
       <div class="nav-links">
         <a href={`${base}/learn/`} class:list={[{ active: currentPath.includes('/learn') }]}>学习</a>
         <a href={`${base}/principles/`} class:list={[{ active: currentPath.includes('/principles') }]}>原则</a>
+        <a href={`${base}/daily/`} class:list={[{ active: currentPath.includes('/daily') }]}>每日</a>
       </div>
     </nav>
     <main>

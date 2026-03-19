@@ -8,6 +8,12 @@ const principleSchema = z.object({
   updatedAt: z.string().optional(),
 });
 
+const dailySchema = z.object({
+  title: z.string(),
+  date: z.string(),
+  tags: z.array(z.string()).default([]),
+});
+
 const learn = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/learn' }),
   schema: principleSchema,
@@ -18,4 +24,9 @@ const principles = defineCollection({
   schema: principleSchema,
 });
 
-export const collections = { learn, principles };
+const daily = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/daily' }),
+  schema: dailySchema,
+});
+
+export const collections = { learn, principles, daily };
