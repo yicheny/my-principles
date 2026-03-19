@@ -17,7 +17,7 @@ const lifePrinciples = (await getCollection('life')).sort((a, b) => a.data.order
   <div class="card-list">
     {workPrinciples.length === 0 && <p style="color: var(--color-text-secondary)">暂无内容</p>}
     {workPrinciples.map((entry) => (
-      <a href={`${base}work/${entry.id}/`} class="card">
+      <a href={`${base}/work/${entry.id}/`} class="card">
         <h3>{entry.data.title}</h3>
         {entry.data.tags.length > 0 && (
           <div class="tags">
@@ -34,7 +34,7 @@ const lifePrinciples = (await getCollection('life')).sort((a, b) => a.data.order
   <div class="card-list">
     {lifePrinciples.length === 0 && <p style="color: var(--color-text-secondary)">暂无内容</p>}
     {lifePrinciples.map((entry) => (
-      <a href={`${base}life/${entry.id}/`} class="card">
+      <a href={`${base}/life/${entry.id}/`} class="card">
         <h3>{entry.data.title}</h3>
         {entry.data.tags.length > 0 && (
           <div class="tags">
