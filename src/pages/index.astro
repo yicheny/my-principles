@@ -6,6 +6,7 @@ const base = import.meta.env.BASE_URL;
 const learnPrinciples = (await getCollection('learn')).sort((a, b) => a.data.order - b.data.order);
 const principles = (await getCollection('principles')).sort((a, b) => a.data.order - b.data.order);
 const dailyEntries = (await getCollection('daily')).sort((a, b) => b.data.date.localeCompare(a.data.date)).slice(0, 5);
+const notesEntries = (await getCollection('notes')).sort((a, b) => b.data.date.localeCompare(a.data.date)).slice(0, 5);
 ---
 
 <Base title="我的原则">
@@ -53,6 +54,24 @@ const dailyEntries = (await getCollection('daily')).sort((a, b) => b.data.date.l
     {dailyEntries.length === 0 && <p style="color: var(--color-text-secondary)">暂无内容</p>}
     {dailyEntries.map((entry) => (
       <a href={`${base}/daily/${entry.id}/`} class="card">
+        <h3>{entry.data.title}</h3>
+        <p style="color: var(--color-text-secondary); font-size: 0.85rem; margin-top: 0.25rem;">{entry.data.date}</p>
+        {entry.data.tags.length > 0 && (
+          <div class="tags">
+            {entry.data.tags.map((tag) => (
+              <span class="tag">{tag}</span>
+            ))}
+          </div>
+        )}
+      </a>
+    ))}
+  </div>
+
+  <h2 class="section-title">📒 学习笔记</h2>
+  <div class="card-list">
+    {notesEntries.length === 0 && <p style="color: var(--color-text-secondary)">暂无内容</p>}
+    {notesEntries.map((entry) => (
+      <a href={`${base}/notes/${entry.id}/`} class="card">
         <h3>{entry.data.title}</h3>
         <p style="color: var(--color-text-secondary); font-size: 0.85rem; margin-top: 0.25rem;">{entry.data.date}</p>
         {entry.data.tags.length > 0 && (

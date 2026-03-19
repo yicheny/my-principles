@@ -233,6 +233,30 @@ footer {
   font-size: 0.85rem;
 }
 
+/* Table */
+article .content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  font-size: 0.95em;
+}
+
+article .content th,
+article .content td {
+  border: 1px solid var(--color-border);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+article .content th {
+  background: var(--color-tag-bg);
+  font-weight: 600;
+}
+
+article .content tr:hover td {
+  background: #f9f8f7;
+}
+
 /* Responsive */
 @media (max-width: 480px) {
   .hero h1 {
