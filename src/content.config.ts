@@ -8,14 +8,14 @@ const principleSchema = z.object({
   updatedAt: z.string().optional(),
 });
 
-const work = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/work' }),
+const learn = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/learn' }),
   schema: principleSchema,
 });
 
-const life = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/life' }),
+const principles = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/principles' }),
   schema: principleSchema,
 });
 
-export const collections = { work, life };
+export const collections = { learn, principles };
