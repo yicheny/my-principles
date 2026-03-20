@@ -18,6 +18,18 @@ const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 3);
 
 <Base title={`${entry.data.title} - 学习笔记`}>
   {tocHeadings.length > 0 && (
+    <button class="toc-toggle" aria-label="目录">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="5" x2="17" y2="5" />
+        <line x1="3" y1="10" x2="13" y2="10" />
+        <line x1="3" y1="15" x2="17" y2="15" />
+      </svg>
+    </button>
+  )}
+  {tocHeadings.length > 0 && (
+    <div class="toc-overlay"></div>
+  )}
+  {tocHeadings.length > 0 && (
     <aside class="toc">
       <p class="toc-title">目录</p>
       <ul>
@@ -40,6 +52,29 @@ const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 3);
 </Base>
 
 <script>
+  // TOC toggle for mobile
+  const tocToggle = document.querySelector('.toc-toggle');
+  const toc = document.querySelector('.toc');
+  const tocOverlay = document.querySelector('.toc-overlay');
+
+  if (tocToggle && toc && tocOverlay) {
+    tocToggle.addEventListener('click', () => {
+      toc.classList.toggle('open');
+      tocOverlay.classList.toggle('open');
+    });
+    tocOverlay.addEventListener('click', () => {
+      toc.classList.remove('open');
+      tocOverlay.classList.remove('open');
+    });
+    toc.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        toc.classList.remove('open');
+        tocOverlay.classList.remove('open');
+      });
+    });
+  }
+
+  // IntersectionObserver for active heading
   const headings = Array.from(document.querySelectorAll('article h1, article h2, article h3'));
   const links = document.querySelectorAll('.toc a');
   if (headings.length && links.length) {
