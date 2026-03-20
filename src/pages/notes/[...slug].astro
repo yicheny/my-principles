@@ -11,11 +11,24 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 const base = import.meta.env.BASE_URL;
+const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 3);
 ---
 
 <Base title={`${entry.data.title} - 学习笔记`}>
+  {tocHeadings.length > 0 && (
+    <aside class="toc">
+      <p class="toc-title">目录</p>
+      <ul>
+        {tocHeadings.map(h => (
+          <li data-depth={h.depth}>
+            <a href={`#${h.slug}`}>{h.text}</a>
+          </li>
+        ))}
+      </ul>
+    </aside>
+  )}
   <a href={`${base}/notes/`} class="back-link">&larr; 返回学习笔记</a>
   <article>
     <h1>{entry.data.title}</h1>
@@ -25,3 +38,24 @@ const base = import.meta.env.BASE_URL;
     </div>
   </article>
 </Base>
+
+<script>
+  const headings = Array.from(document.querySelectorAll('article h1, article h2, article h3'));
+  const links = document.querySelectorAll('.toc a');
+  if (headings.length && links.length) {
+    const observer = new IntersectionObserver(
+      () => {
+        const top = headings
+          .filter(h => h.getBoundingClientRect().top <= 120)
+          .at(-1) ?? headings[0];
+        links.forEach(a => a.classList.remove('active'));
+        if (top) {
+          const active = document.querySelector(`.toc a[href="#${top.id}"]`);
+          active?.classList.add('active');
+        }
+      },
+      { rootMargin: '0px 0px -80% 0px' }
+    );
+    headings.forEach(h => observer.observe(h));
+  }
+</script>

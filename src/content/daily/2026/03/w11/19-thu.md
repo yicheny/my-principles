@@ -1,7 +1,7 @@
 ---
 title: 目标：学习minimind
 date: "2026-03-19"
-tags: [daily, AI, llm]
+tags: [AI,minimind]
 ---
 
 ## 专注学习时间
