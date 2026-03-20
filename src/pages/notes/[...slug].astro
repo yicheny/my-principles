@@ -58,19 +58,22 @@ const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 3);
   const tocOverlay = document.querySelector('.toc-overlay');
 
   if (tocToggle && toc && tocOverlay) {
-    tocToggle.addEventListener('click', () => {
-      toc.classList.toggle('open');
-      tocOverlay.classList.toggle('open');
-    });
-    tocOverlay.addEventListener('click', () => {
+    const openToc = () => {
+      toc.classList.add('open');
+      tocOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    };
+    const closeToc = () => {
       toc.classList.remove('open');
       tocOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    };
+    tocToggle.addEventListener('click', () => {
+      toc.classList.contains('open') ? closeToc() : openToc();
     });
+    tocOverlay.addEventListener('click', closeToc);
     toc.querySelectorAll('a').forEach(a => {
-      a.addEventListener('click', () => {
-        toc.classList.remove('open');
-        tocOverlay.classList.remove('open');
-      });
+      a.addEventListener('click', closeToc);
     });
   }
 
