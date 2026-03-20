@@ -322,11 +322,13 @@ article .content tr:hover td {
     padding: 1.5rem;
     z-index: 100;
     box-shadow: 2px 0 12px rgba(0,0,0,0.1);
-    display: block;
     transform: translateX(-100%);
     transition: transform 0.3s ease;
+    pointer-events: none;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
-  .toc.open { transform: translateX(0); }
+  .toc.open { transform: translateX(0); pointer-events: auto; }
   .toc-toggle { display: flex; }
   .toc-overlay {
     display: block;
