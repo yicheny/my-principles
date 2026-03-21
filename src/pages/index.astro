@@ -5,6 +5,7 @@ import { getCollection } from 'astro:content';
 const base = import.meta.env.BASE_URL;
 const learnPrinciples = (await getCollection('learn')).sort((a, b) => a.data.order - b.data.order);
 const principles = (await getCollection('principles')).sort((a, b) => a.data.order - b.data.order);
+const keyPoints = (await getCollection('keyPoints')).sort((a, b) => a.data.order - b.data.order);
 const dailyEntries = (await getCollection('daily')).sort((a, b) => b.data.date.localeCompare(a.data.date)).slice(0, 5);
 const notesEntries = (await getCollection('notes')).sort((a, b) => b.data.date.localeCompare(a.data.date)).slice(0, 5);
 ---
@@ -37,6 +38,23 @@ const notesEntries = (await getCollection('notes')).sort((a, b) => b.data.date.l
     {learnPrinciples.length === 0 && <p style="color: var(--color-text-secondary)">暂无内容</p>}
     {learnPrinciples.map((entry) => (
       <a href={`${base}/learn/${entry.id}/`} class="card">
+        <h3>{entry.data.title}</h3>
+        {entry.data.tags.length > 0 && (
+          <div class="tags">
+            {entry.data.tags.map((tag) => (
+              <span class="tag">{tag}</span>
+            ))}
+          </div>
+        )}
+      </a>
+    ))}
+  </div>
+
+  <h2 class="section-title">🔑 速查知识点</h2>
+  <div class="card-list">
+    {keyPoints.length === 0 && <p style="color: var(--color-text-secondary)">暂无内容</p>}
+    {keyPoints.map((entry) => (
+      <a href={`${base}/keyPoints/${entry.id}/`} class="card">
         <h3>{entry.data.title}</h3>
         {entry.data.tags.length > 0 && (
           <div class="tags">

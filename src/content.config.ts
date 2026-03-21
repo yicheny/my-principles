@@ -34,4 +34,9 @@ const notes = defineCollection({
   schema: dailySchema,
 });
 
-export const collections = { learn, principles, daily, notes };
+const keyPoints = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/keyPoints' }),
+  schema: principleSchema,
+});
+
+export const collections = { learn, principles, daily, notes, keyPoints };

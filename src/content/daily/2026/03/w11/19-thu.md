@@ -1,5 +1,5 @@
 ---
-title: 目标：学习minimind
+title: minimind：环境搭建与快速体验
 date: "2026-03-19"
 tags: [AI,minimind]
 ---

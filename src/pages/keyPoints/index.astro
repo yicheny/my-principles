@@ -1,0 +1,27 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const base = import.meta.env.BASE_URL;
+const entries = (await getCollection('keyPoints')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<Base title="速查知识点">
+  <a href={base} class="back-link">&larr; 返回首页</a>
+  <h2 class="section-title">🔑 速查知识点</h2>
+  <div class="card-list">
+    {entries.length === 0 && <p style="color: var(--color-text-secondary)">暂无内容</p>}
+    {entries.map((entry) => (
+      <a href={`${base}/keyPoints/${entry.id}/`} class="card">
+        <h3>{entry.data.title}</h3>
+        {entry.data.tags.length > 0 && (
+          <div class="tags">
+            {entry.data.tags.map((tag) => (
+              <span class="tag">{tag}</span>
+            ))}
+          </div>
+        )}
+      </a>
+    ))}
+  </div>
+</Base>

@@ -1,5 +1,5 @@
 ---
-title: 目标：学习minimind
+title: minimind：理解模型架构
 date: "2026-03-20"
 tags: [AI,minimind]
 ---

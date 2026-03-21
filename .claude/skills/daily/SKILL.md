@@ -23,20 +23,17 @@ allowed-tools: Bash(mkdir *), Bash(date *), Write, Read, Glob
 ### daily 文件模板
 ```markdown
 ---
-title: 待填写
+title: 日记
 date: "{YEAR}-{MONTH}-{DAY}"
 tags: [daily]
 ---
 
-## 专注学习时间
-
-<!-- 格式：HH:MM-HH:MM XhYm -->
-
 ## 今日目标
 
 ## 学习内容
+### 专注学习（对于最有价值的内容，保持专注，避免分散注意力）
 
-## 收获与反思
+## 收获与思考
 ```
 
 ### notes 文件模板

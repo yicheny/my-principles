@@ -1,10 +1,10 @@
 ---
 title: MiniMind — 阶段 2.1：Transformer 整体架构
 date: "2026-03-20"
-tags: [AI LLM MiniMind CNN]
+tags: [AI LLM MiniMind]
 ---
 
-# Transformer Decoder-Only 整体结构
+# Transformer 整体结构
 
 ## 知识点 1：什么是 Transformer？
 
@@ -176,7 +176,7 @@ MiniMind 的最小模型只堆了 **8 层** Transformer Block，所以参数才 
 
 > 💡 一个有趣的细节：MiniMind 的 Output 层和 Embedding 层共享同一组参数（叫做 weight tying），这样可以省下一半参数。这是小模型常用的技巧。
 
-## 追问：为什么小模型用 Weight Tying，大模型不用？
+## 问题：为什么小模型用 Weight Tying，大模型不用？
 
 ---
 

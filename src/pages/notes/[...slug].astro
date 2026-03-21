@@ -14,6 +14,7 @@ const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
 const base = import.meta.env.BASE_URL;
 const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 3);
+
 ---
 
 <Base title={`${entry.data.title} - 学习笔记`}>
@@ -44,7 +45,7 @@ const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 3);
   <a href={`${base}/notes/`} class="back-link">&larr; 返回学习笔记</a>
   <article>
     <h1>{entry.data.title}</h1>
-    <p class="meta">{entry.data.date}</p>
+    <p class="meta">{entry.data.date} · 全文 <span id="word-count">…</span> 字</p>
     <div class="content">
       <Content />
     </div>
@@ -52,6 +53,16 @@ const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 3);
 </Base>
 
 <script>
+  // 字数统计：从渲染后的 DOM 读取文章文本，中文每字计1，英文每词计1
+  const articleContent = document.querySelector('article .content');
+  const wordCountEl = document.getElementById('word-count');
+  if (articleContent && wordCountEl) {
+    const text = articleContent.textContent ?? '';
+    const cjk = (text.match(/[\u4e00-\u9fff\u3400-\u4dbf]/g) ?? []).length;
+    const en = (text.match(/[a-zA-Z]+/g) ?? []).length;
+    wordCountEl.textContent = String(cjk + en);
+  }
+
   // TOC toggle for mobile
   const tocToggle = document.querySelector('.toc-toggle');
   const toc = document.querySelector('.toc');
