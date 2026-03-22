@@ -40,10 +40,14 @@ tags: [daily,阅读,AI]
 15. [x] 为什么旋转公式只能处理2维
 16. [x] 点积
 17. [x] 相似度到底是语义关系还是位置关系？
-18. [ ] RoPE 代码实现 
+18. [x] 旋转角度 
+19. [x] RoPE源码
+    1.  [x] precompute_freqs_cis
+    2.  [x] apply_rotary_pos_emb
 
 复习
 1. [x] RMSNorm
 2. [x] TransformBlock内部长什么样
 
 ## 收获与思考
+1. 别争论，去构建

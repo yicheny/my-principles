@@ -1303,11 +1303,9 @@ Attention 分数（同时反映语义相似度和相对位置）
 
 ---
 
-好，基础概念全部打通了！现在进入激动人心的环节——
+好，基础概念全部打通了！现在进入激动人心的环节——RoPE 代码实现 🔥
 
-# RoPE 代码实现 🔥
-
-## 回顾：我们要做什么
+回顾：我们要做什么
 
 ```
 512 维向量 → 分成 256 组 → 每组 2 维 → 各自旋转
@@ -1315,7 +1313,7 @@ Attention 分数（同时反映语义相似度和相对位置）
 
 但有一个重要细节还没讲：
 
-### 每组旋转的角度一样吗？
+# 每组旋转的角度一样吗？
 
 **不一样！** 每组有**不同的基础频率 θ**：
 
@@ -1347,118 +1345,195 @@ Attention 分数（同时反映语义相似度和相对位置）
 θ₂₅₅ = 1 / 10000^(510/512) = 1 / 9772   = 0.0001   ← 几乎不转
 ```
 
-### 为什么要不同频率？
+# 为什么不同组要用不同的旋转速度？
 
-这就像**时钟**：
+## 如果所有组都用相同速度会怎样？
+
+假设所有 256 组都用同一个 θ，那么：
 
 ```
-秒针：转得快 → 区分短距离（相邻几个 Token）
-分针：转得慢 → 区分中等距离
-时针：转得很慢 → 区分长距离（几百个 Token）
+位置 0 的 Token：所有组都旋转 0°
+位置 1 的 Token：所有组都旋转 θ
+位置 2 的 Token：所有组都旋转 2θ
+...
 ```
 
-不同频率的组合，让模型能**同时感知近距离和远距离的位置关系**。
+看起来也能区分位置？但有一个致命问题——
+
+### 旋转是周期性的！
+
+```
+转 0°  和 转 360° → 一模一样！
+转 30° 和 转 390° → 一模一样！
+```
+
+如果 θ = 1°，那么：
+
+```
+位置   0：旋转 0°
+位置 360：旋转 360° = 0°  😱 和位置 0 一模一样！
+```
+
+**模型分不清位置 0 和位置 360！**
+
+而且因为所有组都用同一个 θ，所有组都在同一时刻"重复"，没有任何补救。
+
+## 用时钟来理解
+
+这是我认为最直觉的比喻：
+
+### 只有秒针的钟 ⏱️
+
+```
+秒针：每 60 秒转一圈
+
+ 时刻 0 秒  → 秒针指向 12 点
+ 时刻 60 秒 → 秒针指向 12 点
+ 时刻 120 秒→ 秒针指向 12 点
+
+你看一眼钟：秒针指向 12 点
+→ 现在是第 0 秒？第 60 秒？第 120 秒？
+→ 你分不清！❌
+```
+
+### 有秒针 + 分针的钟 🕐
+
+```
+ 时刻 0 秒  → 秒针 12 点，分针 12 点
+ 时刻 60 秒 → 秒针 12 点，分针 12:01
+ 时刻 120 秒→ 秒针 12 点，分针 12:02
+
+你看一眼钟：秒针指向 12 点，分针指向 12:02
+→ 一定是第 120 秒！✅
+```
+
+秒针虽然转回来了（重复了），但分针还没转回来，所以能区分！
+
+### 有秒针 + 分针 + 时针的钟 🕐
+
+```
+ 时刻 0     → 秒 12，分 12，时 12
+ 时刻 3600 秒 → 秒 12，分 12，时 1 点
+
+哪怕秒针和分针都转回来了，时针还在移动
+→ 能区分更远的时间！✅✅
+```
+
+### 对应到 RoPE
+
+```
+第 0 组：θ₀ 大  → 转得快 → 像秒针 → 区分相邻位置（位置 1 和 2）
+第 1 组：θ₁ 稍小 → 稍慢   → 像分针 → 区分中等距离（位置 50 和 80）
+第 2 组：θ₂ 更小 → 更慢   → 像时针 → 区分远距离（位置 500 和 800）
+...
+第 255 组：θ₂₅₅ 极小 → 几乎不转 → 区分极远距离
+```
+
+**256 组不同频率组合在一起 = 一个 256 根指针的超级时钟 🕐**
+
+每个位置在这个超级时钟上有**唯一**的指针组合，所以每个位置都能被唯一标识。
+
+### 一句话总结
+
+> **不同频率 = 不同精度的尺子，叠加在一起，就能从"很近"到"很远"全覆盖。**
 
 ---
 
-## 看 MiniMind 源码
+# MiniMind 真实 RoPE 源码（已和本地代码对比）
 
-MiniMind 中 RoPE 的实现在模型文件中，分为两步：
+文件位置：`model/model_minimind.py`
 
-### 第一步：预计算旋转频率
-
-```python
-def precompute_pos_cis(dim, end=1024, theta=10000.0):
-    # 1. 计算每组的基础频率 θᵢ
-    freqs = 1.0 / (theta ** (torch.arange(0, dim, 2).float() / dim))
-    # torch.arange(0, dim, 2) = [0, 2, 4, ..., dim-2]  → 每组的 2i
-    # 除以 dim → 得到 2i/d
-    # theta ** (...) → 10000 ^ (2i/d)
-    # 1.0 / (...) → θᵢ = 1 / 10000^(2i/d)
-
-    # 2. 计算每个位置的旋转角度
-    t = torch.arange(end).float()  # t = [0, 1, 2, ..., 1023] → 位置编号
-    freqs = torch.outer(t, freqs)  # 外积：每个位置 × 每组频率
-    # 结果形状: [1024, dim/2]
-    # freqs[m][i] = m × θᵢ → 位置 m 的第 i 组旋转角度
-
-    # 3. 转成复数形式（用于方便计算旋转）
-    pos_cis = torch.polar(torch.ones_like(freqs), freqs)
-    # polar(r, θ) = r × (cosθ + i·sinθ)
-    # 即: cos(m×θᵢ) + i·sin(m×θᵢ)
-  
-    return pos_cis
-```
-
-这里有个新东西——**复数**。别怕，我来解释：
-
-### 为什么用复数？
-
-2D 旋转公式，我们之前写的是：
-
-```
-x' = x·cos(θ) - y·sin(θ)
-y' = x·sin(θ) + y·cos(θ)
-```
-
-需要 4 次乘法、2 次加减。但如果用复数，同样的旋转可以写成：
-
-```
-(x + iy) × (cosθ + i·sinθ) = x' + iy'
-
-一次复数乘法 = 搞定！
-```
-
-**复数乘法 = 旋转。** 这不是什么高深的数学，就是一种**更简洁的写法**而已。
-
-```
-普通写法（2行）：          复数写法（1行）：
-x' = x·cosθ - y·sinθ      (x+iy) × (cosθ + i·sinθ)
-y' = x·sinθ + y·cosθ    
-```
-
-### 第二步：应用旋转
-
-```python
-def apply_rotary_emb(xq, xk, pos_cis):
-    # xq 形状: [batch, seq_len, heads, dim]
-    # xk 形状: [batch, seq_len, heads, dim]
-  
-    # 1. 两两分组 → 转成复数
-    #    [x₀, x₁, x₂, x₃, ...] → [(x₀+ix₁), (x₂+ix₃), ...]
-    xq_ = torch.view_as_complex(xq.float().reshape(*xq.shape[:-1], -1, 2))
-    xk_ = torch.view_as_complex(xk.float().reshape(*xk.shape[:-1], -1, 2))
-  
-    # 2. 复数乘法 = 旋转！
-    xq_out = xq_ * pos_cis  # 每组乘以对应的 (cosθ + i·sinθ)
-    xk_out = xk_ * pos_cis
-  
-    # 3. 转回实数
-    xq_out = torch.view_as_real(xq_out).flatten(-2)
-    xk_out = torch.view_as_real(xk_out).flatten(-2)
-  
-    return xq_out.type_as(xq), xk_out.type_as(xk)
-```
+一共**两个关键函数**：
 
 ---
 
-## 完整数据流图
+## 函数 1：`precompute_freqs_cis` —— 预计算 cos 和 sin
+
+从源码可以看到，核心频率计算为 `freqs = 1.0 / (rope_base ** (torch.arange(0, dim, 2)[: (dim // 2)].float() / dim))`
+
+完整函数（忽略 YaRN 长文本部分，之后再学）：
+
+```python
+def precompute_freqs_cis(dim, end=1024, rope_base=10000.0, rope_scaling=None):
+    # ========= 第一步：计算每组的基础频率 θᵢ =========
+    freqs = 1.0 / (rope_base ** (torch.arange(0, dim, 2)[: (dim // 2)].float() / dim))
+    attn_factor = 1.0
+  
+    # （YaRN 长文本扩展部分，暂时跳过）
+    # if rope_scaling is not None: ...
+  
+    # ========= 第二步：每个位置 × 每组频率 = 旋转角度 =========
+    t = torch.arange(end).float()       # [0, 1, 2, ..., end-1] 位置编号
+    freqs = torch.outer(t, freqs)       # 外积 → 形状 [end, dim//2]
+  
+    # ========= 第三步：算出 cos 和 sin =========
+    freqs_cos = torch.cos(freqs) * attn_factor
+    freqs_sin = torch.sin(freqs) * attn_factor
+  
+    return freqs_cos, freqs_sin
+```
+
+在模型初始化时，这个函数被调用：`freqs_cos, freqs_sin = precompute_freqs_cis(dim=config.hidden_size // config.num_attention_heads, end=config.max_position_embeddings, rope_base=config.rope_theta, rope_scaling=config.rope_scaling)`
+
+## 函数 2：`apply_rotary_pos_emb` —— 对 Q、K 执行旋转
+
+MiniMind 的实际代码：
+
+```python
+def apply_rotary_pos_emb(q, k, cos, sin, position_ids=None, unsqueeze_dim=1):
+    def rotate_half(x):
+        return torch.cat((-x[..., x.shape[-1] // 2:], x[..., : x.shape[-1] // 2]), dim=-1)
+
+    q_embed = (q * cos.unsqueeze(unsqueeze_dim)) + (rotate_half(q) * sin.unsqueeze(unsqueeze_dim))
+    k_embed = (k * cos.unsqueeze(unsqueeze_dim)) + (rotate_half(k) * sin.unsqueeze(unsqueeze_dim))
+    return q_embed, k_embed
+```
+
+这就是 MiniMind 的**全部 RoPE 代码**，非常精炼！
+
+## 逐行拆解
+
+我们现在不急着全部看懂。先只理解**第一步**：为什么频率要不同。
+
+### `freqs = 1.0 / (rope_base ** (torch.arange(0, dim, 2)[: (dim // 2)].float() / dim))`
+
+这一行信息量很大，拆开来看：
+
+```python
+# 假设 dim = 8（实际 MiniMind 是 64，这里简化举例）
+
+torch.arange(0, 8, 2)        # → [0, 2, 4, 6]      每隔2取一个
+[: (8 // 2)]                  # → [0, 2, 4, 6]      取前 dim/2 个（4个）
+.float() / 8                  # → [0.0, 0.25, 0.5, 0.75]   除以 dim
+
+rope_base ** (...)            # → [10000^0.0, 10000^0.25, 10000^0.5, 10000^0.75]
+                              # = [1,        10,          100,       1000]
+
+1.0 / (...)                   # → [1/1, 1/10, 1/100, 1/1000]
+                              # = [1.0, 0.1,  0.01,  0.001]
+```
+
+结果是 **4 个频率值，从大到小排列**：
 
 ```
-输入：Q 向量 [x₀, x₁, x₂, x₃, ..., x₅₁₀, x₅₁₁]
-              ↓
-第1步：两两分组转复数
-       [(x₀+ix₁), (x₂+ix₃), ..., (x₅₁₀+ix₅₁₁)]
-         第0组      第1组            第255组
-              ↓
-第2步：乘以旋转复数（每组频率不同！）
-       × [e^(imθ₀), e^(imθ₁), ..., e^(imθ₂₅₅)]
-              ↓
-第3步：转回实数
-       [x₀', x₁', x₂', x₃', ..., x₅₁₀', x₅₁₁']
-              ↓
-输出：带位置信息的 Q 向量
+freqs = [1.0,   0.1,   0.01,   0.001]
+         第0组   第1组   第2组    第3组
+         转最快  ↓      ↓       转最慢
 ```
+
+### 为什么要从大到小？
+
+就是上节讲的**时钟原理**：
+
+```
+第0组 频率 1.0   → 秒针 → 每个位置转 1.0 弧度 → 区分相邻位置
+第1组 频率 0.1   → 分针 → 每个位置转 0.1 弧度 → 区分稍远位置
+第2组 频率 0.01  → 时针 → 每个位置转 0.01 弧度 → 区分更远位置
+第3组 频率 0.001 → 日历 → 每个位置转 0.001 弧度 → 区分极远位置
+```
+
+如果只用 1 组（只有秒针），转一圈就回来了，分不清位置 0 和位置 6.28。
+4 组组合在一起，每个位置有**唯一的 (cos, sin) 组合**。
 
 ---
 
@@ -1466,21 +1541,21 @@ def apply_rotary_emb(xq, xk, pos_cis):
 
 | 要点 | 内容 |
 |------|------|
-| 分组策略 | 512 维 → 256 组，每组 2 维独立旋转 |
-| 不同频率 | θᵢ = 1/10000^(2i/d)，低维转快，高维转慢 |
-| 频率类比 | 像时钟的秒针/分针/时针，感知不同尺度的距离 |
-| 复数技巧 | 复数乘法 = 2D 旋转，只是更简洁的写法 |
-| 核心代码 | `precompute_pos_cis` 预算角度，`apply_rotary_emb` 执行旋转 |
-
----
+| 源码位置 | `model/model_minimind.py` |
+| 函数 1 | `precompute_freqs_cis` → 预计算所有位置的 cos/sin |
+| 函数 2 | `apply_rotary_pos_emb` → 用 cos/sin 旋转 Q 和 K |
+| 核心一行 | `1.0 / (10000 ** (arange / dim))` → 生成从大到小的频率 |
+| 不同频率原因 | 快频率区分近距离，慢频率区分远距离，组合起来覆盖所有距离 |
 
 ## 🤔 思考题
 
-> **看这行代码：`freqs = torch.outer(t, freqs)`**
+> 回到代码中的这一步：
+> ```python
+> t = torch.arange(end).float()   # [0, 1, 2, ..., 1023]
+> freqs = torch.outer(t, freqs)   # 外积
+> ```
+> `torch.outer` 是外积，就是把两个向量**每对元素相乘**。
 >
-> `t = [0, 1, 2, ..., 1023]` 是位置编号
-> `freqs = [θ₀, θ₁, θ₂, ..., θ₂₅₅]` 是每组的频率
+> 如果 `t = [0, 1, 2]`（3个位置），`freqs = [1.0, 0.1]`（2组频率）
 >
-> `torch.outer` 是外积，意思是把两个向量的**每对组合都相乘**。
->
-> 请问：结果矩阵的形状是什么？`结果[5][3]` 代表什么物理含义？
+> 请问 `torch.outer(t, freqs)` 的结果是什么？（提示：结果是一个 3×2 的矩阵）
