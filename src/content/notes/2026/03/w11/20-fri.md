@@ -1,7 +1,7 @@
 ---
 title: MiniMind — 阶段 2.1：Transformer 整体架构
 date: "2026-03-20"
-tags: [AI LLM MiniMind]
+tags: [AI, LLM, MiniMind]
 ---
 
 # Transformer 整体结构

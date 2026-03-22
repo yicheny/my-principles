@@ -1,7 +1,7 @@
 ---
 title: MiniMind — 阶段 2.2：RMSNorm
 date: "2026-03-21"
-tags: [MiniMind]
+tags: [AI, LLM, MiniMind]
 ---
 
 # Weight Tying 到底怎么共享的？

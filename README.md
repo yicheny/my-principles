@@ -1,3 +1,6 @@
+# 线上访问地址
+https://yicheny.github.io/my-principles
+
 # Astro Starter Kit: Minimal
 
 ```sh

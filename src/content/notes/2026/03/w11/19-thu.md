@@ -1,7 +1,7 @@
 ---
 title: MiniMind — 阶段 1：环境搭建与快速体验
 date: "2026-03-19"
-tags: [AI LLM MiniMind]
+tags: [AI, LLM, MiniMind]
 ---
 
 # MiniMind 学习笔记 — 阶段 1：环境搭建与快速体验
