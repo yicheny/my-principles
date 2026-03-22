@@ -32,7 +32,16 @@ const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 4);
   )}
   {tocHeadings.length > 0 && (
     <aside class="toc">
-      <p class="toc-title">目录</p>
+      <div class="toc-header">
+        <p class="toc-title">目录</p>
+        <div class="toc-depth-btns">
+          <button class="toc-depth-btn active" data-max="0">全</button>
+          <button class="toc-depth-btn" data-max="1">1</button>
+          <button class="toc-depth-btn" data-max="2">2</button>
+          <button class="toc-depth-btn" data-max="3">3</button>
+          <button class="toc-depth-btn" data-max="4">4</button>
+        </div>
+      </div>
       <ul>
         {tocHeadings.map(h => (
           <li data-depth={h.depth}>
@@ -70,6 +79,21 @@ const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 4);
     const en = (text.match(/[a-zA-Z]+/g) ?? []).length;
     wordCountEl.textContent = String(cjk + en);
   }
+
+  // TOC depth filter
+  const depthBtns = document.querySelectorAll<HTMLButtonElement>('.toc-depth-btn');
+  const tocItems = document.querySelectorAll<HTMLElement>('.toc li[data-depth]');
+  depthBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      depthBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const max = Number(btn.dataset.max);
+      tocItems.forEach(li => {
+        const depth = Number(li.dataset.depth);
+        li.style.display = (max === 0 || depth <= max) ? '' : 'none';
+      });
+    });
+  });
 
   // TOC toggle for mobile
   const tocToggle = document.querySelector('.toc-toggle');
@@ -137,6 +161,33 @@ const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 4);
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
+  }
+
+  .toc-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+  .toc-header .toc-title { margin-bottom: 0; }
+  .toc-depth-btns {
+    display: flex;
+    gap: 0.2rem;
+  }
+  .toc-depth-btn {
+    padding: 0.1rem 0.35rem;
+    font-size: 0.7rem;
+    border: 1px solid var(--color-border, #e2e8f0);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    line-height: 1.4;
+  }
+  .toc-depth-btn.active {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #fff;
   }
 
   .print-btn {
