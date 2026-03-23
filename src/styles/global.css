@@ -274,8 +274,28 @@ article .content tr:hover td {
 .toc li[data-depth="2"] { padding-left: 0.75rem; }
 .toc li[data-depth="3"] { padding-left: 1.5rem; }
 .toc li[data-depth="4"] { padding-left: 2.25rem; }
-.toc a { color: var(--color-text-secondary); }
+.toc a {
+  color: var(--color-text-secondary);
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .toc a:hover, .toc a.active { color: var(--color-accent); text-decoration: none; }
+
+.toc-tooltip {
+  position: fixed;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  font-size: 0.78rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
 .toc a.active { font-weight: 600; }
 
 @media (min-width: 1921px) {

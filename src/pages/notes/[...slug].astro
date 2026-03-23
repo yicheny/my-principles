@@ -45,7 +45,7 @@ const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 4);
       <ul>
         {tocHeadings.map(h => (
           <li data-depth={h.depth}>
-            <a href={`#${h.slug}`}>{h.text}</a>
+            <a href={`#${h.slug}`} title={h.text}>{h.text}</a>
           </li>
         ))}
       </ul>
@@ -79,6 +79,25 @@ const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 4);
     const en = (text.match(/[a-zA-Z]+/g) ?? []).length;
     wordCountEl.textContent = String(cjk + en);
   }
+
+  // TOC link tooltip (show full text when truncated)
+  const tooltip = document.createElement('div');
+  tooltip.className = 'toc-tooltip';
+  document.body.appendChild(tooltip);
+  document.querySelectorAll<HTMLAnchorElement>('.toc a').forEach(a => {
+    a.addEventListener('mouseenter', (e) => {
+      if (a.scrollWidth <= a.clientWidth) return;
+      tooltip.textContent = a.textContent;
+      tooltip.style.opacity = '1';
+    });
+    a.addEventListener('mousemove', (e) => {
+      tooltip.style.left = `${(e as MouseEvent).clientX + 12}px`;
+      tooltip.style.top = `${(e as MouseEvent).clientY - 6}px`;
+    });
+    a.addEventListener('mouseleave', () => {
+      tooltip.style.opacity = '0';
+    });
+  });
 
   // TOC depth filter
   const depthBtns = document.querySelectorAll<HTMLButtonElement>('.toc-depth-btn');

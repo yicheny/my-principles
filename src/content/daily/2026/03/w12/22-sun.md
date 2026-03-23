@@ -1,5 +1,5 @@
 ---
-title: 日记
+title: minimind：RMSNorm、RoPE
 date: "2026-03-22"
 tags: [daily,阅读,AI]
 ---
