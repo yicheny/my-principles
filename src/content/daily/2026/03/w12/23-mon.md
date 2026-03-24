@@ -1,5 +1,5 @@
 ---
-title: minimind：RoPE
+title: minimind：SwiGLU
 date: "2026-03-23"
 tags: [minimind]
 ---

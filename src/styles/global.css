@@ -24,6 +24,7 @@ html {
   background: var(--color-bg);
   line-height: 1.7;
   -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -235,7 +236,9 @@ footer {
 
 /* Table */
 article .content table {
-  width: 100%;
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
   border-collapse: collapse;
   margin-bottom: 1rem;
   font-size: 0.95em;
