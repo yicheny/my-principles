@@ -1,5 +1,5 @@
 ---
-title: MiniMind — 阶段 2.5：Attention
+title: MiniMind — 阶段 2.5：Attention、Causal Mask
 date: "2026-03-24"
 tags: [AI, MiniMind]
 ---

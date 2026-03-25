@@ -30,7 +30,7 @@ const daily = defineCollection({
 });
 
 const notes = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/notes' }),
+  loader: glob({ pattern: ['**/*.md', '!**/codes/**'], base: './src/content/notes' }),
   schema: dailySchema,
 });
 

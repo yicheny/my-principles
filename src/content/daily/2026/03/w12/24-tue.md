@@ -1,5 +1,5 @@
 ---
-title: minimind：Attention
+title: minimind：Attention、Causal Mask
 date: "2026-03-24"
 tags: [阅读, minimind]
 ---

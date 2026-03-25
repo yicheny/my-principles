@@ -1,5 +1,5 @@
 ---
-title: minimind学习
+title: minimind 复习
 date: "2026-03-25"
 tags: [read, minimind, 思考]
 ---
