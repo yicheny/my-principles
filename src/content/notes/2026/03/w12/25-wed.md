@@ -9,7 +9,7 @@ tags: [AI, MiniMind]
 ## 学习者背景
 - Apple M5 MacBook Pro（32GB），无 NVIDIA GPU，使用 PyTorch MPS 后端
 - Python 初学，PyTorch 零经验，深度学习零基础
-- 目标：理解原理、二次开发、求职
+- 目标：理解原理、二次开发
 
 ---
 
