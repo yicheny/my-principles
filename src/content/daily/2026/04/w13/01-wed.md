@@ -1,5 +1,5 @@
 ---
-title: 日记
+title: 启动opencode web应用项目
 date: "2026-04-02"
 tags: [read, think, opencode]
 ---
