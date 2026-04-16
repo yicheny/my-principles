@@ -50,7 +50,7 @@ const notesEntries = (await getCollection('notes')).sort((a, b) => b.data.date.l
     ))}
   </div>
 
-  <h2 class="section-title">🔑 速查知识点</h2>
+  <h2 class="section-title">🔑 专题知识点</h2>
   <div class="card-list">
     {keyPoints.length === 0 && <p style="color: var(--color-text-secondary)">暂无内容</p>}
     {keyPoints.map((entry) => (
