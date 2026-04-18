@@ -35,7 +35,7 @@ const notes = defineCollection({
 });
 
 const keyPoints = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/keyPoints' }),
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/keyPoints' }),
   schema: principleSchema,
 });
 
