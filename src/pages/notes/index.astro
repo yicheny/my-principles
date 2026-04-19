@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
+import { getExcerpt } from '../../utils/excerpt';
 
 const base = import.meta.env.BASE_URL;
 const entries = (await getCollection('notes')).sort((a, b) => b.data.date.localeCompare(a.data.date));
@@ -15,13 +16,7 @@ const entries = (await getCollection('notes')).sort((a, b) => b.data.date.locale
       <a href={`${base}/notes/${entry.id}/`} class="card">
         <h3>{entry.data.title}</h3>
         <p class="meta">{entry.data.date}</p>
-        {entry.data.tags.length > 0 && (
-          <div class="tags">
-            {entry.data.tags.map((tag) => (
-              <span class="tag">{tag}</span>
-            ))}
-          </div>
-        )}
+        <p class="excerpt">{getExcerpt(entry.body)}</p>
       </a>
     ))}
   </div>

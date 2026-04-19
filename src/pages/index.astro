@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { getCollection } from 'astro:content';
+import { getExcerpt } from '../utils/excerpt';
 
 const base = import.meta.env.BASE_URL;
 const learnPrinciples = (await getCollection('learn')).sort((a, b) => a.data.order - b.data.order);
@@ -22,13 +23,7 @@ const notesEntries = (await getCollection('notes')).sort((a, b) => b.data.date.l
     {principles.map((entry) => (
       <a href={`${base}/principles/${entry.id}/`} class="card">
         <h3>{entry.data.title}</h3>
-        {entry.data.tags.length > 0 && (
-          <div class="tags">
-            {entry.data.tags.map((tag) => (
-              <span class="tag">{tag}</span>
-            ))}
-          </div>
-        )}
+        <p class="excerpt">{getExcerpt(entry.body)}</p>
       </a>
     ))}
   </div>
@@ -39,13 +34,7 @@ const notesEntries = (await getCollection('notes')).sort((a, b) => b.data.date.l
     {learnPrinciples.map((entry) => (
       <a href={`${base}/learn/${entry.id}/`} class="card">
         <h3>{entry.data.title}</h3>
-        {entry.data.tags.length > 0 && (
-          <div class="tags">
-            {entry.data.tags.map((tag) => (
-              <span class="tag">{tag}</span>
-            ))}
-          </div>
-        )}
+        <p class="excerpt">{getExcerpt(entry.body)}</p>
       </a>
     ))}
   </div>
@@ -56,13 +45,7 @@ const notesEntries = (await getCollection('notes')).sort((a, b) => b.data.date.l
     {keyPoints.map((entry) => (
       <a href={`${base}/keyPoints/${entry.id}/`} class="card">
         <h3>{entry.data.title}</h3>
-        {entry.data.tags.length > 0 && (
-          <div class="tags">
-            {entry.data.tags.map((tag) => (
-              <span class="tag">{tag}</span>
-            ))}
-          </div>
-        )}
+        <p class="excerpt">{getExcerpt(entry.body)}</p>
       </a>
     ))}
   </div>
@@ -74,13 +57,7 @@ const notesEntries = (await getCollection('notes')).sort((a, b) => b.data.date.l
       <a href={`${base}/daily/${entry.id}/`} class="card">
         <h3>{entry.data.title}</h3>
         <p style="color: var(--color-text-secondary); font-size: 0.85rem; margin-top: 0.25rem;">{entry.data.date}</p>
-        {entry.data.tags.length > 0 && (
-          <div class="tags">
-            {entry.data.tags.map((tag) => (
-              <span class="tag">{tag}</span>
-            ))}
-          </div>
-        )}
+        <p class="excerpt">{getExcerpt(entry.body)}</p>
       </a>
     ))}
   </div>
@@ -92,13 +69,7 @@ const notesEntries = (await getCollection('notes')).sort((a, b) => b.data.date.l
       <a href={`${base}/notes/${entry.id}/`} class="card">
         <h3>{entry.data.title}</h3>
         <p style="color: var(--color-text-secondary); font-size: 0.85rem; margin-top: 0.25rem;">{entry.data.date}</p>
-        {entry.data.tags.length > 0 && (
-          <div class="tags">
-            {entry.data.tags.map((tag) => (
-              <span class="tag">{tag}</span>
-            ))}
-          </div>
-        )}
+        <p class="excerpt">{getExcerpt(entry.body)}</p>
       </a>
     ))}
   </div>
