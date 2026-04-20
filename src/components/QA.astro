@@ -52,13 +52,18 @@ const count = tabs.length;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     margin: 1rem 0;
-    overflow: hidden;
+  }
+
+  /* slot 内容来自 MDX，无 data-astro 作用域，需 :global 才能选中内部 p */
+  .tab-panel :global(p) {
+    margin-bottom: 0;
   }
 
   .tab-bar {
     display: flex;
     background: #f8fafc;
     border-bottom: 1px solid #e2e8f0;
+    border-radius: 8px 8px 0 0;
   }
 
   .tab-btn {

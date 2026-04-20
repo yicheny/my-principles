@@ -6,14 +6,26 @@ updatedAt: "2026-04-19"
 ---
 
 import QA from '../../components/QA.astro'
+import Tip from '../../components/Tip.astro'
 
 # 元信息：mindmind学习路线
 
 <QA tabs={['问题', '答案']}>
   <Fragment slot="tab0">
-    mindmind学习路线是什么？
+    mindmind学习路线x0
   </Fragment>
   <Fragment slot="tab1">
-    //
+    1. 环境搭建与快速体验
+    2. 理解 模型架构
+    3. Tokenizer 分词器
+
+    4. 预训练（Pretrain）
+    5. 监督微调 <Tip>SFT<Fragment slot='answer'>Supervised Fine-Tuning，指在已经预训练好的大模型上，用带标注的[输入->期望输出] 样本继续训练，让模型更贴近你想要的任务风格、格式或领域知识</Fragment></Tip>
+    6. 强化学习对齐（<Tip>RLHF<Fragment slot='answer'>Reinforcement Learning form Human Feedback</Fragment></Tip> / <Tip>RLAIF<Fragment slot='answer'>RL from AI Feedback</Fragment></Tip>）
+
+    7. 模型蒸馏与推理模型
+    8. 模型评估与部署
+    9. 视觉多模态（minimind-V）
+
   </Fragment>
 </QA>
