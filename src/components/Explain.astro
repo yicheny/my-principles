@@ -1,12 +1,16 @@
 ---
+interface Props {
+  term: string;
+}
+const { term } = Astro.props;
 ---
 <span class="explain-wrapper">
   <span class="explain-trigger">
-    <slot />
+    {term}
     <span class="explain-icon">?</span>
   </span>
   <span class="explain-content">
-    <slot name="answer" />
+    <slot />
   </span>
 </span>
 
