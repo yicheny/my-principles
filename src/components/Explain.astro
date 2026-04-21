@@ -1,0 +1,86 @@
+---
+---
+<span class="explain-wrapper">
+  <span class="explain-trigger">
+    <slot />
+    <span class="explain-icon">?</span>
+  </span>
+  <span class="explain-content">
+    <slot name="answer" />
+  </span>
+</span>
+
+<script>
+  function initExplains() {
+    document.querySelectorAll('.explain-trigger').forEach((trigger) => {
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const wrapper = trigger.closest('.explain-wrapper');
+        const wasOpen = wrapper.classList.contains('is-open');
+        document.querySelectorAll('.explain-wrapper.is-open').forEach((w) => w.classList.remove('is-open'));
+        if (!wasOpen) wrapper.classList.add('is-open');
+      });
+    });
+
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.explain-wrapper.is-open').forEach((w) => w.classList.remove('is-open'));
+    });
+  }
+
+  initExplains();
+  document.addEventListener('astro:page-load', initExplains);
+</script>
+
+<style>
+  .explain-wrapper {
+    position: relative;
+    display: inline;
+  }
+
+  .explain-trigger {
+    text-decoration: underline;
+    text-decoration-style: dashed;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--color-text-secondary);
+    cursor: pointer;
+  }
+
+  .explain-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    margin-left: 2px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--color-accent);
+    border-radius: 50%;
+    vertical-align: super;
+    line-height: 1;
+  }
+
+  .explain-content {
+    display: none;
+    background: #f5f5f5;
+    color: #333;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    border-left: 3px solid var(--color-accent);
+    margin: 0.4rem 0 0.25rem;
+  }
+
+  .explain-wrapper.is-open .explain-content {
+    display: block;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .explain-content {
+      background: #1e1e1e;
+      color: #e4e4e4;
+    }
+  }
+</style>
