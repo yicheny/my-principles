@@ -14,13 +14,8 @@ const dailySchema = z.object({
   tags: z.array(z.string()).default([]),
 });
 
-const learn = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/learn' }),
-  schema: principleSchema,
-});
-
 const principles = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/principles' }),
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/principles' }),
   schema: principleSchema,
 });
 
@@ -39,4 +34,4 @@ const keyPoints = defineCollection({
   schema: principleSchema,
 });
 
-export const collections = { learn, principles, daily, notes, keyPoints };
+export const collections = { principles, daily, notes, keyPoints };

@@ -22,7 +22,6 @@ const currentPath = Astro.url.pathname;
     <nav>
       <a href={base} class="site-title">我的原则</a>
       <div class="nav-links">
-        <a href={`${base}/learn/`} class:list={[{ active: currentPath.includes('/learn') }]}>悟</a>
         <a href={`${base}/principles/`} class:list={[{ active: currentPath.includes('/principles') }]}>原则</a>
         <a href={`${base}/daily/`} class:list={[{ active: currentPath.includes('/daily') }]}>每日</a>
         <a href={`${base}/notes/`} class:list={[{ active: currentPath.includes('/notes') }]}>笔记</a>

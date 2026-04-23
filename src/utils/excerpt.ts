@@ -1,5 +1,5 @@
-export function getExcerpt(body: string, maxLength = 80): string {
-  const text = body
+export function getExcerpt(body: string | undefined, maxLength = 80): string {
+  const text = (body ?? '')
     .replace(/^#{1,6}\s+/gm, '')       // headings
     .replace(/\*\*(.+?)\*\*/g, '$1')   // bold
     .replace(/\*(.+?)\*/g, '$1')       // italic
