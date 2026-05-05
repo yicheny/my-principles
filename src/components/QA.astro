@@ -2,9 +2,10 @@
 interface Props {
   tabs?: string[];
   review?: number;
+  lastReview?: string;
 }
 
-const { tabs = ['问题', '答案'], review } = Astro.props;
+const { tabs = ['问题', '答案'], review, lastReview } = Astro.props;
 const count = tabs.length;
 ---
 
@@ -13,11 +14,16 @@ const count = tabs.length;
     {tabs.map((tab, i) => (
       <button class:list={['tab-btn', { active: i === 0 }]} data-index={i}>
         {tab}
-        {i === 0 && review != null && review > 0 && (
-          <span class="review-dot">{review}</span>
-        )}
       </button>
     ))}
+    <div class="badge">
+      {review != null && review > 0 && (
+          <span class="review-dot">{review}</span>
+        )}
+      {lastReview && (
+        <span class="review-days" data-last-review={lastReview}></span>
+      )}
+    </div>
   </div>
   <div class="tab-panels">
     <div class:list={['tab-panel', 'active']} data-index="0">
@@ -36,6 +42,17 @@ const count = tabs.length;
 
 <script>
   document.querySelectorAll('.tabs').forEach((container) => {
+    // 计算并渲染 lastReview 天数
+    container.querySelectorAll<HTMLElement>('.review-days[data-last-review]').forEach((el) => {
+      const last = new Date(el.dataset.lastReview!);
+      const today = new Date();
+      // 只比较日期，不计时间
+      last.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0);
+      const days = Math.round((today.getTime() - last.getTime()) / 86400000);
+      el.textContent = `${days}天`;
+    });
+
     const buttons = container.querySelectorAll('.tab-btn');
     const panels = container.querySelectorAll('.tab-panel');
 
@@ -83,10 +100,12 @@ const count = tabs.length;
     transition: all 0.2s;
   }
 
+  .badge{
+    
+  }
+
   .review-dot {
-    position: absolute;
-    top: 2px;
-    right: 0;
+    margin: 0 8px;
     min-width: 16px;
     height: 16px;
     padding: 0 4px;
@@ -97,6 +116,19 @@ const count = tabs.length;
     color: #fff;
     background: #ef4444;
     border-radius: 50%;
+  }
+
+  .review-days {
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    text-align: center;
+    color: #fff;
+    background: #3b82f6;
+    border-radius: 8px;
   }
 
   .tab-btn:hover {
