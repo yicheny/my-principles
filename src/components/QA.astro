@@ -49,8 +49,8 @@ const count = tabs.length;
       // 只比较日期，不计时间
       last.setHours(0, 0, 0, 0);
       today.setHours(0, 0, 0, 0);
-      const days = Math.round((today.getTime() - last.getTime()) / 86400000);
-      el.textContent = `${days}天`;
+      const days = Math.round((today.getTime() - last.getTime()) / 86400000) - 1;
+      el.textContent = `${days < 0 ? 0 : days}天`;
     });
 
     const buttons = container.querySelectorAll('.tab-btn');
